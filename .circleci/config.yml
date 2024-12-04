@@ -39,28 +39,26 @@ jobs:
               -Dsonar.branch.name="$SONAR_BRANCH" \
               -Dsonar.sources="."
               
-# Job for unit testing
-  unit-tests:
+# Job for Newman API testing
+  newman-tests:
     docker:
-      - image: cimg/node:current
+      - image: postman/newman:latest
     steps:
       - checkout
       - run:
-          name: Verify package.json Exists
+          name: Verify Postman Collection Exists
           command: |
-            if [ ! -f package.json ]; then
-              echo "Error: package.json is missing"; exit 1;
+            if [ ! -f tests/postman_collection.json ]; then
+              echo "Error: Postman collection file is missing"; exit 1;
             fi
       - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Run Unit Tests
-          command: npm test
+          name: Run Newman Tests
+          command: newman run tests/postman_collection.json --reporters cli
+
 # Orchestrate jobs using workflows
 workflows:
   full-pipeline:
     jobs:
       - say-hello
       - sonarqube
-      - unit-tests
+      - newman-tests

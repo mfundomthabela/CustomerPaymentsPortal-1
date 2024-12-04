@@ -38,10 +38,29 @@ jobs:
               -Dsonar.login="$SONAR_TOKEN" \
               -Dsonar.branch.name="$SONAR_BRANCH" \
               -Dsonar.sources="."
-
+              
+# Job for unit testing
+  unit-tests:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - run:
+          name: Verify package.json Exists
+          command: |
+            if [ ! -f package.json ]; then
+              echo "Error: package.json is missing"; exit 1;
+            fi
+      - run:
+          name: Install Dependencies
+          command: npm install
+      - run:
+          name: Run Unit Tests
+          command: npm test
 # Orchestrate jobs using workflows
 workflows:
   full-pipeline:
     jobs:
       - say-hello
       - sonarqube
+      - unit-tests

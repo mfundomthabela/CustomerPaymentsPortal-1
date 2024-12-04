@@ -12,7 +12,17 @@ jobs:
       # Specify the version you desire here
       # See: https://circleci.com/developer/images/image/cimg/base
       - image: cimg/base:current
-
+  # Job for running API tests with Newman
+  newman-tests:
+    docker:
+      # Use Node.js image with Newman preinstalled
+      - image: postman/newman:latest
+    steps:
+      - checkout
+      - run:
+          name: "Run Newman Tests"
+          command: |
+            newman run tests/postman_collection.json --reporters cli
     # Add steps to the job
     # See: https://circleci.com/docs/jobs-steps/#steps-overview & https://circleci.com/docs/configuration-reference/#steps
     steps:
@@ -21,6 +31,31 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
+
+  # Job for running API tests with Newman
+  newman-tests:
+    docker:
+      # Use Node.js image with Newman preinstalled
+      - image: postman/newman:latest
+    steps:
+      - checkout
+      - run:
+          name: "Run Newman Tests"
+          command: |
+            newman run tests/postman_collection.json --reporters cli
+            
+    # Job for running unit tests
+  unit-tests:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run Unit Tests
+          command: npm test
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows

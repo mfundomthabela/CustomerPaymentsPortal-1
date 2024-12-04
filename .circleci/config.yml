@@ -14,30 +14,35 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
-sonarqube:
-working_directory: ~/build 
-docker:
-- image: sonarsource/sonar-scanner-cli
-resource_class: small
-steps:
-- run: find .
-- ﻿﻿attach_workspace:
-  at: ~/workspace
-- ﻿﻿run: |
- SONAR_BRANCH="${CIRCLE _BRANCH:-master)"
- echo "Sonar branch value is: " $SONAR_BRANCH
- echo "Sonar org value is : "$SONAR_ORG
- sonar-scanner \
-  -﻿﻿Dsonar.projectkey="$SONAR_PROJECT_KEY" \
-  -﻿Dsonar.organization="$SONAR_ORG" \
-  -﻿Dsonar.host.url=https://sonarcloud.io \
-  -﻿Dsonar.exclusions="**/android/**,**/ios/**" \
-  -﻿Dsonar.login="$SONAR_TOKEN" \
-  -﻿Dsonar.branch.name="$SONAR_BRANCH" \
-  -﻿Dsonar.sources="."
+  # Job for SonarQube analysis
+  sonarqube:
+    working_directory: ~/build
+    docker:
+      - image: sonarsource/sonar-scanner-cli
+    resource_class: small
+    steps:
+      - checkout
+      - run: find .
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Run SonarQube Analysis
+          command: |
+            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
+            echo "Sonar branch value is: $SONAR_BRANCH"
+            echo "Sonar org value is: $SONAR_ORG"
+            sonar-scanner \
+              -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+              -Dsonar.organization="$SONAR_ORG" \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.exclusions="**/android/**,**/ios/**" \
+              -Dsonar.login="$SONAR_TOKEN" \
+              -Dsonar.branch.name="$SONAR_BRANCH" \
+              -Dsonar.sources="."
+
 # Orchestrate jobs using workflows
 workflows:
-  full-pipeline: # This is the name of the workflow, feel free to change it to better match your workflow.
+  full-pipeline:
     jobs:
       - say-hello
       - sonarqube

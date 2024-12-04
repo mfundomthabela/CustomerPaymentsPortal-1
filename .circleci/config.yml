@@ -14,31 +14,27 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
-  # Job for running API tests with Newman
-  newman-tests:
-    docker:
-      # Use Node.js image with Newman preinstalled
-      - image: postman/newman:latest
-    steps:
-      - checkout
-      - run:
-          name: "Run Newman Tests"
-          command: |
-            newman run tests/postman_collection.json --reporters cli
-
-  # Job for running unit tests
-  unit-tests:
-    docker:
-      - image: cimg/node:current
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Run Unit Tests
-          command: npm test
-
+sonarqube:
+working_directory: ~/build 
+docker:
+- image: sonarsource/sonar-scanner-cli
+resource_class: small
+steps:
+- run: find .
+- ﻿﻿attach_workspace:
+  at: ~/workspace
+- ﻿﻿run: |
+ SONAR_BRANCH="${CIRCLE _BRANCH:-master)"
+ echo "Sonar branch value is: " $SONAR_BRANCH
+ echo "Sonar org value is : "$SONAR_ORG
+ sonar-scanner \
+  -﻿﻿Dsonar.projectkey="$SONAR_PROJECT_KEY" \
+  -﻿Dsonar.organization="$SONAR_ORG" \
+  -﻿Dsonar.host.url=https://sonarcloud.io \
+  -﻿Dsonar.exclusions="**/android/**,**/ios/**" \
+  -﻿Dsonar.login="$SONAR_TOKEN" \
+  -﻿Dsonar.branch.name="$SONAR_BRANCH" \
+  -﻿Dsonar.sources="."
 # Orchestrate jobs using workflows
 workflows:
   full-pipeline: # This is the name of the workflow, feel free to change it to better match your workflow.

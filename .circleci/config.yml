@@ -22,7 +22,6 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - run: find .
       - attach_workspace:
           at: ~/workspace
       - run:

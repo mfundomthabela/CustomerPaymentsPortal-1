@@ -1,0 +1,52 @@
+/* Home.css */
+
+/* Styling for the full viewport */
+.app-container {
+  background-color: #040D21; /* Background color */
+  height: 100vh; /* Full height of the viewport */
+  display: flex; /* Flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  padding: 20px; /* Add padding for small screens */
+}
+
+/* Content block that contains the welcome message and buttons */
+.content-block {
+  background-color: #0C162D; /* Block background color */
+  border: 2px solid #202637; /* Border color */
+  padding: 20px; /* Reduce padding to make the block smaller */
+  border-radius: 8px; /* Rounded corners */
+  text-align: center; /* Center text inside the block */
+  width: 100%; /* Full width */
+  max-width: 400px; /* Reduce max width to make the block smaller */
+  margin: 0 auto; /* Center the block */
+}
+
+/* Welcome message block */
+.welcome-message h2 {
+  margin-bottom: 10px; /* Add some margin below the heading */
+  font-size: 24px; /* Adjust font size for heading */
+  color: #00CFC8;; /* White text for visibility */
+}
+
+.welcome-message p {
+  margin-bottom: 20px; /* Add space below the paragraph */
+  color: #ccc; /* Lighter color for paragraph text */
+}
+
+/* Navigation buttons */
+.nav-button {
+  margin: 5px; /* Margin around buttons */
+  padding: 10px 20px; /* Padding inside buttons */
+  font-size: 16px; /* Font size for buttons */
+  cursor: pointer; /* Cursor pointer on hover */
+  background-color: #007bff; /* Button background color */
+  color: white; /* Button text color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners for buttons */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.nav-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}  

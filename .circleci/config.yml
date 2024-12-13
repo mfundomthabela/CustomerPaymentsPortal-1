@@ -53,7 +53,7 @@ jobs:
             fi
       - run:
           name: Run Newman Tests
-          command: newman run tests/postman_collection.json --reporters cli
+          command: newman run customerpaymentsportal/tests/postman_collection.json
 
 # Orchestrate jobs using workflows
 workflows:

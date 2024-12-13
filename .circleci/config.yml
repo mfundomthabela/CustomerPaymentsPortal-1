@@ -1,6 +1,5 @@
 version: 2.1
 
-# Define jobs for the workflow
 jobs:
   # Job for saying hello
   say-hello:
@@ -12,7 +11,7 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
-  # Job for SonarQube analysis
+  # Job for SonarQube analysis (optional, adjust based on your needs)
   sonarqube:
     working_directory: ~/build
     docker:
@@ -35,19 +34,20 @@ jobs:
               -Dsonar.branch.name="$SONAR_BRANCH" \
               -Dsonar.sources="."
 
-  # Job for Newman API testing
+  # Job for running Newman tests
   newman-tests:
     docker:
       - image: postman/newman:latest
     steps:
-      - checkout
-      # Verify Postman Collection Exists with correct path
+      - checkout  # Ensure the repository is checked out
+      # Verify Postman Collection Exists
       - run:
           name: Verify Postman Collection Exists
           command: |
             if [ ! -f customerpaymentsportal/tests/postman_collection.json ]; then
               echo "Error: Postman collection file is missing"; exit 1;
             fi
+      # Run Newman Tests
       - run:
           name: Run Newman Tests
           command: newman run customerpaymentsportal/tests/postman_collection.json
@@ -58,5 +58,5 @@ workflows:
   full-pipeline:
     jobs:
       - say-hello
-      - sonarqube
+      - sonarqube  # Optional step if SonarQube analysis is needed
       - newman-tests

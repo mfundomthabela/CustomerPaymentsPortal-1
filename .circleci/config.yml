@@ -1,0 +1,62 @@
+version: 2.1
+
+jobs:
+  # Job for saying hello
+  say-hello:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
+
+  # Job for SonarQube analysis (optional, adjust based on your needs)
+  sonarqube:
+    working_directory: ~/build
+    docker:
+      - image: sonarsource/sonar-scanner-cli
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Run SonarQube Analysis
+          command: |
+            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
+            echo "Sonar branch value is: $SONAR_BRANCH"
+            # It's safer not to echo sensitive tokens like SONAR_TOKEN
+            sonar-scanner \
+              -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+              -Dsonar.organization="$SONAR_ORG" \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.exclusions="**/android/**,**/ios/**" \
+              -Dsonar.login="$SONAR_TOKEN" \
+              -Dsonar.branch.name="$SONAR_BRANCH" \
+              -Dsonar.sources="."
+
+  # Job for running Newman tests
+  newman-tests:
+    docker:
+      - image: postman/newman:latest
+    steps:
+      - checkout  # Ensure the repository is checked out
+      # Verify Postman Collection Exists
+      - run:
+          name: Verify Postman Collection Exists
+          command: |
+            if [ ! -f customerpaymentsportal/tests/postman_collection.json ]; then
+              echo "Error: Postman collection file is missing"; exit 1;
+            fi
+      # Run Newman Tests
+      - run:
+          name: Run Newman Tests
+          command: newman run customerpaymentsportal/tests/postman_collection.json
+
+# Orchestrate jobs using workflows
+workflows:
+  version: 2
+  full-pipeline:
+    jobs:
+      - say-hello
+      - sonarqube  # Optional step if SonarQube analysis is needed
+      - newman-tests
